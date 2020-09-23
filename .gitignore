@@ -19,5 +19,15 @@
 *.tar.gz
 *.rar
 
+# IntelliJ
+# Default ignored files
+.idea/shelf/
+.idea/workspace.xml
+# Datasource local storage ignored files
+.idea/dataSources/
+.idea/dataSources.local.xml
+# Editor-based HTTP Client requests
+.idea/httpRequests/
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+.idea/hs_err_pid*
