@@ -1,20 +1,23 @@
 package colonelblotto;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class StrategySet implements Iterable<Strategy> {
     private Strategy[] strategySet;
 
     // Initialize strategy set of random strategies
-    public StrategySet(int size, boolean fillRandom, int totalTroops) {
+    public StrategySet(int size, int totalTroops) {
         strategySet = new Strategy[size];
-        if (fillRandom) {
-            for (int i = 0; i < size; i++) {
-                Strategy newStrategy = new Strategy(totalTroops, true);
-                strategySet[i] = newStrategy;
-            }
+        for (int i = 0; i < size; i++) {
+            strategySet[i] = new Strategy(totalTroops, true);
         }
+    }
+
+    private StrategySet(int size, Strategy[] fittestStrategies) {
+        strategySet = new Strategy[size];
+        System.arraycopy(fittestStrategies, 0, strategySet, 0, fittestStrategies.length);
     }
 
     // Calculate fitness for every strategy
@@ -40,8 +43,9 @@ public class StrategySet implements Iterable<Strategy> {
                 }
             }
 
-            thisStrategy.setAverageUtility(utilitySum / (double)opponentStrategySet.getSize());
+            thisStrategy.setAverageUtility(utilitySum / (double) opponentStrategySet.getSize());
         }
+        Arrays.sort(strategySet, Collections.reverseOrder());
     }
 
     public int getSize() {
@@ -53,13 +57,18 @@ public class StrategySet implements Iterable<Strategy> {
     }
 
     public Strategy getFittest() {
-        Strategy fittest = strategySet[0];
-        for (Strategy strategy : this) {
-            if (fittest.getAverageUtility() < strategy.getAverageUtility()) {
-                fittest = strategy;
-            }
+        return strategySet[0];
+    }
+
+    public StrategySet moveFittestIntoNextGeneration(int selectionSize) {
+        return new StrategySet(getSize(), Arrays.copyOf(strategySet, selectionSize));
+    }
+
+    public void calculateCrossoverProbability() {
+        for (int rank = 1; rank <= strategySet.length; rank++) {
+            double probability = 2 * (getSize() + 1 - rank) / (double) (getSize() * (getSize() + 1));
+            strategySet[rank - 1].setCrossoverProbability(probability);
         }
-        return fittest;
     }
 
     @Override

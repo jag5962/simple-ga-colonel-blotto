@@ -2,9 +2,10 @@ package colonelblotto;
 
 import java.util.Random;
 
-public class Strategy {
-    private int[] strategy;
+public class Strategy implements Comparable<Strategy> {
+    private final int[] strategy;
     private double averageUtility;
+    private double crossoverProbability;
 
     public Strategy(int totalTroops, boolean randomize) {
         strategy = new int[ColonelBlotto.NUMBER_OF_BATTLEFIELDS];
@@ -29,6 +30,19 @@ public class Strategy {
 
     public int getBattlefieldTroops(int index) {
         return strategy[index];
+    }
+
+    public double getCrossoverProbability() {
+        return crossoverProbability;
+    }
+
+    public void setCrossoverProbability(double crossoverProbability) {
+        this.crossoverProbability = crossoverProbability;
+    }
+
+    @Override
+    public int compareTo(Strategy strategy) {
+        return Double.compare(this.getAverageUtility(), strategy.getAverageUtility());
     }
 
     @Override
