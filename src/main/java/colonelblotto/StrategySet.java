@@ -60,8 +60,8 @@ public class StrategySet implements Iterable<Strategy> {
         return strategySet[0];
     }
 
-    public StrategySet moveFittestIntoNextGeneration(int selectionSize) {
-        return new StrategySet(getSize(), Arrays.copyOf(strategySet, selectionSize));
+    public StrategySet createNextGenerationWithElitism(int eliteCount) {
+        return new StrategySet(getSize(), Arrays.copyOf(strategySet, eliteCount));
     }
 
     public void calculateCrossoverProbability() {

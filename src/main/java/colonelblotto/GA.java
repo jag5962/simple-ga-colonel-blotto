@@ -3,7 +3,7 @@ package colonelblotto;
 import java.util.Random;
 
 public class GA {
-    private static final double SELECTION_RATE = .25;
+    private static final double ELITISM_RATE = .05;
     private static final double MUTATION_RATE = .01;
 
     public static void evaluation(StrategySet[] strategySets) {
@@ -17,12 +17,12 @@ public class GA {
     }
 
     public static void evolve(StrategySet strategySet) {
-        // Create new strategy set and copy {selectionSize}th highest average utility strategies
-        int selectionSize = (int) Math.round(SELECTION_RATE * strategySet.getSize());
-        StrategySet newStrategySet = strategySet.moveFittestIntoNextGeneration(selectionSize);
+        // Create new strategy set and copy {eliteCount}th highest average utility strategies
+        int eliteCount = (int) Math.round(ELITISM_RATE * strategySet.getSize());
+        StrategySet newStrategySet = strategySet.createNextGenerationWithElitism(eliteCount);
 
         // Use crossover to fill in the rest of the new strategy set
-        crossover(strategySet, newStrategySet, selectionSize);
+        crossover(strategySet, newStrategySet, eliteCount);
     }
 
     private static void crossover(StrategySet strategySet, StrategySet newStrategySet, int start) {

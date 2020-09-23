@@ -13,9 +13,8 @@ public class Strategy implements Comparable<Strategy> {
             int remainingTroops = totalTroops;
             Random random = new Random();
             // Randomly choose a battlefield and add a random number of troops
-            while (remainingTroops > 0) {
-                strategy[random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS)] += 1;
-                remainingTroops -= 1;
+            while (remainingTroops-- > 0) {
+                strategy[random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS)]++;
             }
         }
     }
