@@ -16,34 +16,75 @@ public class GA {
         strategySets[1].calculateCrossoverProbability();
     }
 
-    public static void evolve(StrategySet strategySet) {
+    public static StrategySet evolve(StrategySet strategySet) {
         // Create new strategy set and copy {eliteCount}th highest average utility strategies
-        int eliteCount = (int) Math.round(ELITISM_RATE * strategySet.getSize());
+        int eliteCount = (int) Math.ceil(ELITISM_RATE * strategySet.getSize());
         StrategySet newStrategySet = strategySet.createNextGenerationWithElitism(eliteCount);
 
-        // Use crossover to fill in the rest of the new strategy set
-        crossover(strategySet, newStrategySet, eliteCount);
+        // Use reproduction and mutation to fill in the rest of the new strategy set
+        for (int i = eliteCount; i < strategySet.getSize(); i++) {
+            // Select 2 parent strategies for crossover
+            Strategy[] parents = selectParents(strategySet);
+
+            // Use crossover to produce child strategy
+            Strategy child = crossover(parents);
+
+            // Mutate with probability
+            Random random = new Random();
+            if (random.nextDouble() < MUTATION_RATE) {
+                mutation(child);
+            }
+
+            newStrategySet.setStrategy(i, child);
+        }
+        return newStrategySet;
     }
 
-    private static void crossover(StrategySet strategySet, StrategySet newStrategySet, int start) {
-        // Randomly choose a strategy as a parent
+    private static Strategy[] selectParents(StrategySet strategySet) {
+        // Randomly choose two different strategies as parents
         Random random = new Random();
 
-        double probabilitySum = 0;
-        for (Strategy strategy : strategySet) {
-            probabilitySum += strategy.getCrossoverProbability();
-        }
-        int index = random.nextInt((int) Math.round(probabilitySum) * 100);
+        // Prepare mapping of crossover probabilities
+        int indexSum1 = random.nextInt(100), indexSum2;
+        do {
+            indexSum2 = random.nextInt(100);
+        } while (indexSum1 == indexSum2);
+        int higherUtilityParentIndexSum = Math.max(indexSum1, indexSum2);
+        int lowerUtilityParentIndexSum = Math.min(indexSum1, indexSum2);
 
+        // Set limit to stop looking for higher indexed parent strategy
         double sum = 0;
-        int i = 0;
-        while (sum < index) {
-            sum += strategySet.getStrategy(i++).getCrossoverProbability() * 100;
+        int lowerUtilityParent = -1, higherUtilityParent = -1;
+        while (sum < higherUtilityParentIndexSum) {
+            sum += strategySet.getStrategy(++higherUtilityParent).getCrossoverProbability() * 100;
+            // Save lower indexed parent strategy without stopping loop
+            if (lowerUtilityParent == -1 && sum >= lowerUtilityParentIndexSum) {
+                lowerUtilityParent = higherUtilityParent;
+            }
         }
-        strategySet.getStrategy(i);
+        return new Strategy[]{strategySet.getStrategy(higherUtilityParent),
+                strategySet.getStrategy(lowerUtilityParent)};
     }
 
-    private static void mutation(StrategySet strategySet) {
+    private static Strategy crossover(Strategy[] parents) {
+        return new Strategy(parents);
+    }
 
+    private static void mutation(Strategy strategy) {
+        Random random = new Random();
+        boolean exceptionOccurred;
+        do {
+            exceptionOccurred = false;
+            int mutateBattlefield1 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS), mutateBattlefield2;
+            do {
+                mutateBattlefield2 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS);
+            } while (mutateBattlefield1 == mutateBattlefield2);
+
+            try {
+                strategy.mutateBattlefields(mutateBattlefield1, mutateBattlefield2);
+            } catch (Exception e) {
+                exceptionOccurred = true;
+            }
+        } while (exceptionOccurred);
     }
 }

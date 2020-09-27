@@ -7,14 +7,35 @@ public class Strategy implements Comparable<Strategy> {
     private double averageUtility;
     private double crossoverProbability;
 
-    public Strategy(int totalTroops, boolean randomize) {
+    // Construct new strategy with random disbursement of troops
+    public Strategy(int totalTroops) {
         strategy = new int[ColonelBlotto.NUMBER_OF_BATTLEFIELDS];
-        if (randomize) {
-            int remainingTroops = totalTroops;
-            Random random = new Random();
-            // Randomly choose a battlefield and add a random number of troops
-            while (remainingTroops-- > 0) {
-                strategy[random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS)]++;
+
+        int remainingTroops = totalTroops;
+        Random random = new Random();
+        // Randomly disburse the troops
+        while (remainingTroops-- > 0) {
+            strategy[random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS)]++;
+        }
+    }
+
+    // Crossover parents to create child
+    public Strategy(Strategy[] parents) {
+        strategy = new int[ColonelBlotto.NUMBER_OF_BATTLEFIELDS];
+
+        // Perform crossover by taking the average of troops for each battlefield from parents
+        boolean roundUp = true;
+        for (int battlefield = 0; battlefield < ColonelBlotto.NUMBER_OF_BATTLEFIELDS; battlefield++) {
+            int parentsTroopSum = parents[0].getBattlefieldTroops(battlefield) + parents[1].getBattlefieldTroops(battlefield);
+            strategy[battlefield] = (parentsTroopSum) / 2;
+
+            // Truncation of troop average may lower total troops of child strategy,
+            // so add a troop back for every other truncation occurrence
+            if (parentsTroopSum % 2 == 1) {
+                if (roundUp) {
+                    strategy[battlefield]++;
+                }
+                roundUp = !roundUp;
             }
         }
     }
@@ -37,6 +58,20 @@ public class Strategy implements Comparable<Strategy> {
 
     public void setCrossoverProbability(double crossoverProbability) {
         this.crossoverProbability = crossoverProbability;
+    }
+
+    public void mutateBattlefields(int battlefield1, int battlefield2) throws Exception {
+        if (strategy[battlefield1] == 0 && strategy[battlefield2] == 0) {
+            throw new Exception("Both battlefields can't loose a troop.");
+        }
+
+        if (strategy[battlefield1] > 0) {
+            strategy[battlefield1]--;
+            strategy[battlefield2]++;
+        } else {
+            strategy[battlefield2]--;
+            strategy[battlefield1]++;
+        }
     }
 
     @Override

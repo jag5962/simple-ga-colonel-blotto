@@ -1,5 +1,7 @@
 package colonelblotto;
 
+import java.util.Arrays;
+
 public class ColonelBlotto {
     // Set instance of Colonel Blotto
     static final int[] BATTLEFIELD_UTILITIES = new int[]{4, 8, 10, 11, 13, 2, 16, 20, 1, 21};
@@ -13,18 +15,26 @@ public class ColonelBlotto {
                 new StrategySet(50, TOTAL_TROOPS_A),
                 new StrategySet(50, TOTAL_TROOPS_B)
         };
+        GA.evaluation(strategySets);
+        System.out.println("OldA: " + strategySets[0]);
+        System.out.println("OldB: " + strategySets[1]);
 
-        final int iterations = 1;
-        for (int i = 1; i <= iterations; i++) {
-            GA.evaluation(strategySets);
-
-            // Perform same operations to both strategy sets
-            for (StrategySet strategySet : strategySets) {
-                GA.evolve(strategySet);
+        // Terminate upon convergence for both strategy sets
+        int generationCount = 0;
+        while (!strategySets[0].hasConverged() || !strategySets[1].hasConverged()) {
+            // Perform same operations to both players' strategy sets
+            for (int player = 0; player < 2; player++) {
+                strategySets[player] = GA.evolve(strategySets[player]);
             }
+            GA.evaluation(strategySets);
+            generationCount++;
         }
 
+        System.out.println("NewA: " + strategySets[0]);
+        System.out.println("NewB: " + strategySets[1]);
         System.out.println("Fittest A: " + strategySets[0].getFittest());
         System.out.println("Fittest B: " + strategySets[1].getFittest());
+        System.out.println("Maximum utility: " + Arrays.stream(BATTLEFIELD_UTILITIES).sum());
+        System.out.println("Generations: " + generationCount);
     }
 }
