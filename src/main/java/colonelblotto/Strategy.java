@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Strategy implements Comparable<Strategy> {
     private final int[] strategy;
-    private double averageUtility;
+    private double averagePayoff;
     private double crossoverProbability;
 
     // Construct new strategy with random disbursement of troops
@@ -40,12 +40,12 @@ public class Strategy implements Comparable<Strategy> {
         }
     }
 
-    public void setAverageUtility(double averageUtility) {
-        this.averageUtility = averageUtility;
+    public void setAveragePayoff(double averagePayoff) {
+        this.averagePayoff = averagePayoff;
     }
 
-    public double getAverageUtility() {
-        return averageUtility;
+    public double getAveragePayoff() {
+        return averagePayoff;
     }
 
     public int getBattlefieldTroops(int index) {
@@ -76,7 +76,7 @@ public class Strategy implements Comparable<Strategy> {
 
     @Override
     public int compareTo(Strategy strategy) {
-        return Double.compare(this.getAverageUtility(), strategy.getAverageUtility());
+        return Double.compare(averagePayoff, strategy.getAveragePayoff());
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Strategy implements Comparable<Strategy> {
         for (int battlefieldTroops : strategy) {
             description.append(battlefieldTroops).append("|");
         }
-        description.append(" AVG Utility: ").append(averageUtility);
+        description.append(" AVG Payoff: ").append(averagePayoff);
         return description.toString();
     }
 }

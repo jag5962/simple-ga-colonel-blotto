@@ -8,8 +8,8 @@ public class GA {
 
     public static void evaluation(StrategySet[] strategySets) {
         // Calculate every strategy's average utility
-        strategySets[0].calculateAverageUtilities(strategySets[1]);
-        strategySets[1].calculateAverageUtilities(strategySets[0]);
+        strategySets[0].calculateAveragePayoffs(strategySets[1]);
+        strategySets[1].calculateAveragePayoffs(strategySets[0]);
 
         // Calculate every strategy's probability to be chosen as a parent
         strategySets[0].calculateCrossoverProbability();
@@ -17,12 +17,11 @@ public class GA {
     }
 
     public static StrategySet evolve(StrategySet strategySet) {
-        // Create new strategy set and copy {eliteCount}th highest average utility strategies
-        int eliteCount = (int) Math.ceil(ELITISM_RATE * strategySet.getSize());
-        StrategySet newStrategySet = strategySet.createNextGenerationWithElitism(eliteCount);
+        // Create empty strategy set
+        StrategySet newStrategySet = new StrategySet(strategySet);
 
-        // Use reproduction and mutation to fill in the rest of the new strategy set
-        for (int i = eliteCount; i < strategySet.getSize(); i++) {
+        // Use reproduction and mutation to fill the new strategy set
+        for (int i = 0; i < newStrategySet.getSize(); i++) {
             // Select 2 parent strategies for crossover
             Strategy[] parents = selectParents(strategySet);
 
@@ -36,6 +35,35 @@ public class GA {
             }
 
             newStrategySet.setStrategy(i, child);
+        }
+        return newStrategySet;
+    }
+
+    public static StrategySet evolveWithElitism(StrategySet strategySet) {
+        // Create empty strategy set
+        StrategySet newStrategySet = new StrategySet(strategySet);
+        int eliteCount = (int) Math.ceil(ELITISM_RATE * strategySet.getSize());
+
+        // Use reproduction and mutation to fill the new strategy set
+        Strategy strategy;
+        for (int i = 0; i < newStrategySet.getSize(); i++) {
+            if (i < eliteCount) {
+                strategy = strategySet.getStrategy(i);
+            } else {
+                // Select 2 parent strategies for crossover
+                Strategy[] parents = selectParents(strategySet);
+
+                // Use crossover to produce child strategy
+                strategy = crossover(parents);
+
+                // Mutate with probability
+                Random random = new Random();
+                if (random.nextDouble() < MUTATION_RATE) {
+                    mutation(strategy);
+                }
+            }
+
+            newStrategySet.setStrategy(i, strategy);
         }
         return newStrategySet;
     }
