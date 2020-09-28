@@ -100,19 +100,11 @@ public class GA {
 
     private static void mutation(Strategy strategy) {
         Random random = new Random();
-        boolean exceptionOccurred;
+        int battlefield1 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS), battlefield2;
         do {
-            exceptionOccurred = false;
-            int mutateBattlefield1 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS), mutateBattlefield2;
-            do {
-                mutateBattlefield2 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS);
-            } while (mutateBattlefield1 == mutateBattlefield2);
+            battlefield2 = random.nextInt(ColonelBlotto.NUMBER_OF_BATTLEFIELDS);
+        } while (battlefield1 == battlefield2);
 
-            try {
-                strategy.mutateBattlefields(mutateBattlefield1, mutateBattlefield2);
-            } catch (Exception e) {
-                exceptionOccurred = true;
-            }
-        } while (exceptionOccurred);
+        strategy.swapTroops(battlefield1, battlefield2);
     }
 }

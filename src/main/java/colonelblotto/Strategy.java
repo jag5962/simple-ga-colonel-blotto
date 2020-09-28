@@ -40,12 +40,12 @@ public class Strategy implements Comparable<Strategy> {
         }
     }
 
-    public void setAveragePayoff(double averagePayoff) {
-        this.averagePayoff = averagePayoff;
-    }
-
     public double getAveragePayoff() {
         return averagePayoff;
+    }
+
+    public void setAveragePayoff(double averagePayoff) {
+        this.averagePayoff = averagePayoff;
     }
 
     public int getBattlefieldTroops(int index) {
@@ -60,18 +60,10 @@ public class Strategy implements Comparable<Strategy> {
         this.crossoverProbability = crossoverProbability;
     }
 
-    public void mutateBattlefields(int battlefield1, int battlefield2) throws Exception {
-        if (strategy[battlefield1] == 0 && strategy[battlefield2] == 0) {
-            throw new Exception("Both battlefields can't loose a troop.");
-        }
-
-        if (strategy[battlefield1] > 0) {
-            strategy[battlefield1]--;
-            strategy[battlefield2]++;
-        } else {
-            strategy[battlefield2]--;
-            strategy[battlefield1]++;
-        }
+    public void swapTroops(int battlefield1, int battlefield2) {
+        int temp = strategy[battlefield1];
+        strategy[battlefield1] = strategy[battlefield2];
+        strategy[battlefield2] = temp;
     }
 
     @Override
