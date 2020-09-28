@@ -27,23 +27,21 @@ public class StrategySet implements Iterable<Strategy> {
     public void calculateAveragePayoffs(StrategySet opponentStrategySet) {
         // Calculate average payoff for every strategy in this set
         for (Strategy thisStrategy : this) {
-            int payoffSum = 0;
+            long payoffSum = 0;
 
-            // Compare troops on each battlefield for this strategy set's strategy to every strategy
-            // of the opponent's strategy set
-            for (int battlefieldIndex = 0; battlefieldIndex < ColonelBlotto.NUMBER_OF_BATTLEFIELDS; battlefieldIndex++) {
-                int thisStrategyTroops = thisStrategy.getBattlefieldTroops(battlefieldIndex);
-
-                // Compare strategy to every one of opponent's strategies
-                for (Strategy opponentStrategy : opponentStrategySet) {
-                    int opponentTroops = opponentStrategy.getBattlefieldTroops(battlefieldIndex);
+            // Compare strategy to every one of the opponent's strategies
+            for (Strategy opponentStrategy : opponentStrategySet) {
+                // Compare troops on each battlefield
+                for (int battlefield = 0; battlefield < ColonelBlotto.NUMBER_OF_BATTLEFIELDS; battlefield++) {
+                    int thisStrategyTroops = thisStrategy.getBattlefieldTroops(battlefield);
+                    int opponentTroops = opponentStrategy.getBattlefieldTroops(battlefield);
                     if (player == 'A') {
                         if (thisStrategyTroops >= opponentTroops) {
-                            payoffSum += ColonelBlotto.BATTLEFIELD_PAYOFFS[battlefieldIndex];
+                            payoffSum += ColonelBlotto.BATTLEFIELD_PAYOFFS[battlefield];
                         }
                     } else {
                         if (thisStrategyTroops > opponentTroops) {
-                            payoffSum += ColonelBlotto.BATTLEFIELD_PAYOFFS[battlefieldIndex];
+                            payoffSum += ColonelBlotto.BATTLEFIELD_PAYOFFS[battlefield];
                         }
                     }
                 }
